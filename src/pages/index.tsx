@@ -24,9 +24,15 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        {data.map((prefectures) => (
-          <div key={prefectures.prefCode}>{prefectures.prefName}</div>
-        ))}
+        <fieldset>
+          <legend>test</legend>
+          {data.map((prefectures) => (
+            <div key={prefectures.prefCode}>
+              <input type='checkbox' id={prefectures.prefName} name={prefectures.prefName} />
+              <label htmlFor={prefectures.prefName}>{prefectures.prefName}</label>
+            </div>
+          ))}
+        </fieldset>
       </main>
     </div>
   )
