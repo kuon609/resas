@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { ChangeEvent, useState } from 'react'
 import useSWR from 'swr'
 import styles from '../styles/Home.module.css'
 import { PrefecturesResponse } from '@/pages/api/prefectures'
@@ -11,10 +12,19 @@ async function fetcher(key: string) {
 }
 
 const Home: NextPage = () => {
+  const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([])
   const { data, error } = useSWR('/api/prefectures', fetcher)
   if (error) return <div>failed to load</div>
   if (!data) return <div>loading...</div>
-  console.log(data)
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (selectedPrefectures.includes(e.target.value)) {
+      setSelectedPrefectures(selectedPrefectures.filter((prefecture) => prefecture !== e.target.value))
+    } else {
+      setSelectedPrefectures([...selectedPrefectures, e.target.value])
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -24,9 +34,15 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        {data.map((prefectures) => (
-          <div key={prefectures.prefCode}>{prefectures.prefName}</div>
-        ))}
+        <fieldset>
+          <legend>{selectedPrefectures.join('_,')}</legend>
+          {data.map((prefectures) => (
+            <div key={prefectures.prefCode}>
+              <input type='checkbox' value={prefectures.prefCode} onChange={handleChange} />
+              <label htmlFor={prefectures.prefName}>{prefectures.prefName}</label>
+            </div>
+          ))}
+        </fieldset>
       </main>
     </div>
   )
